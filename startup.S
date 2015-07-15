@@ -73,17 +73,17 @@ _swi_caller:
 	.global _regdump
 _regdump:
 	// スタックにレジスタの内容を退避させる
-	stmfd	r13!, {r0-r12,lr}
+	push {r0-r12,lr}
 
-	// stack usr mode register
+	# // stack usr mode register
 	push {r0-r7}
 	mrs r0, r8_usr
 	mrs r1, r9_usr
 	mrs r2, r10_usr
 	mrs r3, r11_usr
 	mrs r4, r12_usr
-	mrs r5, sp_usr
-	mrs r6, lr_usr
+	mrs r5, SP_usr
+	mrs r6, LR_usr
 	push {r0-r6}
 
 	// stack fiq mode register
@@ -110,12 +110,12 @@ _regdump:
 	mrs r7, LR_und
 	push {r0-r7}
 
-	// stack mon register
-	mrs r0, SP_mon
-	mrs r1, LR_mon
-	mrs r2, SP_hyp
-	mrs r3, ELR_hyp
-	push {r0-r3}
+	# // stack mon register
+	# mrs r0, SP_mon
+	# mrs r1, LR_mon
+	# mrs r2, SP_hyp
+	# mrs r3, ELR_hyp
+	# push {r0-r3}
 
 	// set sp start addr
 	mov r0, sp
@@ -124,10 +124,14 @@ _regdump:
 	bl	swi_hello
 
 	// restore stack address
-	add sp, sp, #34
+	# add sp, sp, #34
+	pop {r0-r7}
+	pop {r0-r6}
+	pop {r0-r6}
+	pop {r0-r7}
 
 	// スタックからレジスタの内容を復元する。
-	ldmfd	r13!, {r0-r12,lr}
+	pop {r0-r12,lr}
 	# sub	pc, lr, #4
 	bx lr
 
